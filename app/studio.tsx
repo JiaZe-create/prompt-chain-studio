@@ -2,7 +2,7 @@
 import {useEffect,useRef,useState} from 'react';
 import {signOut} from './actions';
 import type {Chain,Step,Run} from '@/lib/types';
-const blank={name:'',prompt_template:'',model:'gemini-3.8-flash',temperature:0.8};
+const blank={name:'',prompt_template:'',model:'gemini-3.5-flash-lite',temperature:0.8};
 async function api(body:unknown){const r=await fetch('/api/studio',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const j=await r.json();if(!r.ok)throw new Error(j.error||'Request failed.');return j.data;}
 export default function Studio({email,generationReady}:{email:string;generationReady:boolean}){
  const [chains,setChains]=useState<Chain[]>([]),[selected,setSelected]=useState(''),[steps,setSteps]=useState<Step[]>([]),[runs,setRuns]=useState<Run[]>([]),[loading,setLoading]=useState(true),[detailLoading,setDetailLoading]=useState(false),[busy,setBusy]=useState(false),[running,setRunning]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState(''),[query,setQuery]=useState(''),[tab,setTab]=useState('editor');
