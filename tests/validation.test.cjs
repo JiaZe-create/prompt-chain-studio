@@ -1,0 +1,6 @@
+const test=require('node:test');const assert=require('node:assert/strict');const ts=require('typescript');const fs=require('node:fs');const vm=require('node:vm');
+const code=ts.transpileModule(fs.readFileSync('lib/validation.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText;const box={exports:{}};vm.runInNewContext(code,box);const {renderPrompt,stepInput,id}=box.exports;
+test('previous output is passed through literally, without recursive template expansion',()=>assert.equal(renderPrompt('A {{previous}} B {{input}}','original','{{input}}'),'A {{input}} B original'));
+test('steps without placeholders still receive prior output',()=>assert.equal(renderPrompt('Summarize','original','previous'),'Summarize\n\nInput:\nprevious'));
+test('reject invalid model endpoints, temperature, and identifiers',()=>{assert.throws(()=>stepInput({name:'x',prompt_template:'x',model:'https://evil.example',temperature:1}));assert.throws(()=>stepInput({name:'x',prompt_template:'x',model:'gemini-2.5-flash',temperature:3}));assert.throws(()=>id('not-a-uuid'));});
+test('valid step input preserves prompt placeholders',()=>assert.equal(stepInput({name:' Test ',prompt_template:'{{previous}}',model:'gemini-2.5-flash',temperature:'0.8'}).prompt_template,'{{previous}}'));
